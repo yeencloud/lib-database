@@ -71,7 +71,6 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 
 	if err != nil {
 		arrayOfRequest[LoggerDomain.LogFieldError.MetricKey()] = err
-
 	}
 	sharedcontext.WithLog(arrayOfRequest)
 
