@@ -26,8 +26,8 @@ github.com/yeencloud/lib-logger v0.1.1 h1:0VBjqgW5m1pmZm5voiLTTGDu2zgPIz7yxs9rrO
 github.com/yeencloud/lib-logger v0.1.1/go.mod h1:+wKUQbKHRnxutRUNivG+XWbT0Bt2RNizgIwu7gMCa3U=
 github.com/yeencloud/lib-metrics v0.1.0 h1:G8IfCmPKgq+giypOyjOZvXHU9FfbjCrYmPSlrb21nHQ=
 github.com/yeencloud/lib-metrics v0.1.0/go.mod h1:Sdk61XkURdWWbvBM+y5M6pH8JUtdDCv9iYsJ71TISL4=
-github.com/yeencloud/lib-shared v0.1.0 h1:2i69Y4dOoRhKLDLUZ+IRTsy7utqrtwUbaLtXwDFJtns=
-github.com/yeencloud/lib-shared v0.1.0/go.mod h1:UFGbti2J/h179bvodfK/YpIiV94hiA4vlni1Cgc575k=
+github.com/yeencloud/lib-shared v0.1.1 h1:C5D4691AsDojXJ0ZA/XU681Q9tshk8SH8qSyDdC5LFk=
+github.com/yeencloud/lib-shared v0.1.1/go.mod h1:UFGbti2J/h179bvodfK/YpIiV94hiA4vlni1Cgc575k=
 golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=
 golang.org/x/crypto v0.31.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
 golang.org/x/sync v0.10.0 h1:3NQrjDixjgGwUOCaF8w2+VYHv0Ve/vGYSbdkTa98gmQ=

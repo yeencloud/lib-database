@@ -6,7 +6,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/yeencloud/lib-logger v0.1.1
 	github.com/yeencloud/lib-metrics v0.1.0
-	github.com/yeencloud/lib-shared v0.1.0
+	github.com/yeencloud/lib-shared v0.1.1
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
