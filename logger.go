@@ -9,6 +9,7 @@ import (
 
 	metrics "github.com/yeencloud/lib-metrics"
 	MetricsDomain "github.com/yeencloud/lib-metrics/domain"
+	sharedMetrics "github.com/yeencloud/lib-shared/metrics"
 	"github.com/yeencloud/lib-shared/namespace"
 )
 
@@ -71,13 +72,31 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 
 	logMessage.Info(sql)
 
-	err = metrics.LogPoint(MetricsDomain.Point{
-		Name: "sql",
-	}, MetricsDomain.Values{
-		"request_query":            sql,
-		"request_rows_affected":    affectedRows,
-		"request_time_duration_ms": duration,
-	})
+	var mPoint MetricsDomain.Point
+	var mValues MetricsDomain.Values
+
+	point, ok := ctx.Value(sharedMetrics.MetricsPointKey).(MetricsDomain.Point)
+	if !ok {
+		mPoint = MetricsDomain.Point{
+			Tags: map[string]string{},
+		}
+	} else {
+		mPoint = point
+	}
+
+	mPoint.Name = "sql"
+
+	values, ok := ctx.Value(sharedMetrics.MetricsValuesKey).(MetricsDomain.Values)
+	if !ok {
+		mValues = MetricsDomain.Values{}
+	} else {
+		mValues = values
+	}
+	mValues["request_query"] = sql
+	mValues["request_rows_affected"] = affectedRows
+	mValues["request_time_duration_ms"] = duration
+
+	err = metrics.LogPoint(mPoint, mValues)
 
 	if err != nil {
 		log.WithError(err).Error("failed to log metrics")

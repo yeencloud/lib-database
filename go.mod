@@ -4,8 +4,8 @@ go 1.23
 
 require (
 	github.com/sirupsen/logrus v1.9.3
-	github.com/yeencloud/lib-metrics v0.2.1
-	github.com/yeencloud/lib-shared v0.2.0
+	github.com/yeencloud/lib-metrics v0.2.2
+	github.com/yeencloud/lib-shared v0.2.1
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
