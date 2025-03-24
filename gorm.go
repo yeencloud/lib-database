@@ -6,17 +6,18 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	shared "github.com/yeencloud/lib-shared/log"
+	sharedLogger "github.com/yeencloud/lib-shared/log"
 )
 
 type Database struct {
-	DB *gorm.DB
+	Gorm *gorm.DB
 }
 
 func (d *Database) RegisterModels(models ...interface{}) error {
 	ctx := context.Background()
 
-	ctx = context.WithValue(ctx, shared.ContextLoggerKey, logrus.NewEntry(logrus.StandardLogger())) //nolint:staticcheck
+	logger := logrus.NewEntry(logrus.StandardLogger())
+	ctx = sharedLogger.WithLogger(ctx, logger)
 
-	return d.DB.WithContext(ctx).AutoMigrate(models...)
+	return d.Gorm.WithContext(ctx).AutoMigrate(models...)
 }

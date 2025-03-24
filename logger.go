@@ -7,23 +7,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm/logger"
 
+	"github.com/yeencloud/lib-database/domain"
 	metrics "github.com/yeencloud/lib-metrics"
 	MetricsDomain "github.com/yeencloud/lib-metrics/domain"
+	sharedLogger "github.com/yeencloud/lib-shared/log"
 	sharedMetrics "github.com/yeencloud/lib-shared/metrics"
-	"github.com/yeencloud/lib-shared/namespace"
-)
-
-var (
-	LogFieldSQL        = namespace.Namespace{Identifier: "sql"}
-	LogFieldSQLRequest = namespace.Namespace{Parent: &LogFieldSQL, Identifier: "request"}
-
-	LogFieldSQLRowsAffected = namespace.Namespace{Parent: &LogFieldSQLRequest, Identifier: "rows_affected"}
-	LogFieldSQLQuery        = namespace.Namespace{Parent: &LogFieldSQLRequest, Identifier: "query"}
-
-	LogScopeTime        = namespace.Namespace{Parent: &LogFieldSQLRequest, Identifier: "time"}
-	LogFieldTimeStarted = namespace.Namespace{Parent: &LogScopeTime, Identifier: "started"}
-	LogFieldTimeEnded   = namespace.Namespace{Parent: &LogScopeTime, Identifier: "ended"}
-	LogFieldDuration    = namespace.Namespace{Parent: &LogScopeTime, Identifier: "duration_ms"}
 )
 
 type gormLogger struct {
@@ -39,38 +27,30 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 	duration := time.Duration(end.UnixMilli() - begin.UnixMilli()).Milliseconds()
 
 	if ctx == nil {
-		log.WithField("request", sql).Warn("gorm logger called without context")
+		log.WithField(domain.LogFieldSQLQuery.MetricKey(), sql).Warn("gorm logger called without context")
 		return
-	}
-	logger := ctx.Value("logger")
-	if logger == nil {
-		log.WithField("request", sql).Warn("gorm logger called without logger")
-		return
-	}
-	logMessage, ok := logger.(*log.Entry)
-	if !ok {
-		logMessage = log.NewEntry(log.StandardLogger())
 	}
 
-	logMessage = logMessage.WithField("latency", duration)
-	logMessage = logMessage.WithField("affectedRows", affectedRows)
+	logger := sharedLogger.GetLoggerFromContext(ctx)
+	logger = logger.WithField(domain.LogFieldDuration.MetricKey(), duration)
+	logger = logger.WithField(domain.LogFieldSQLRowsAffected.MetricKey(), affectedRows)
 
 	arrayOfRequest := map[string]interface{}{
-		LogFieldSQLQuery.MetricKey():    sql,
-		LogFieldTimeStarted.MetricKey(): begin,
-		LogFieldTimeEnded.MetricKey():   end,
-		LogFieldDuration.MetricKey():    duration,
+		domain.LogFieldSQLQuery.MetricKey():    sql,
+		domain.LogFieldTimeStarted.MetricKey(): begin,
+		domain.LogFieldTimeEnded.MetricKey():   end,
+		domain.LogFieldDuration.MetricKey():    duration,
 	}
 
 	if affectedRows > 0 {
-		arrayOfRequest[LogFieldSQLRowsAffected.MetricKey()] = affectedRows
+		arrayOfRequest[domain.LogFieldSQLRowsAffected.MetricKey()] = affectedRows
 	}
 
 	if err != nil {
-		logMessage = logMessage.WithError(err)
+		logger = logger.WithError(err)
 	}
 
-	logMessage.Info(sql)
+	logger.Info(sql)
 
 	var mPoint MetricsDomain.Point
 	var mValues MetricsDomain.Values
@@ -84,7 +64,7 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 		mPoint = point
 	}
 
-	mPoint.Name = "sql"
+	mPoint.Name = domain.SQLMetricPointName
 
 	values, ok := ctx.Value(sharedMetrics.MetricsValuesKey).(MetricsDomain.Values)
 	if !ok {
@@ -92,15 +72,13 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 	} else {
 		mValues = values
 	}
-	mValues["request_query"] = sql
-	mValues["request_rows_affected"] = affectedRows
-	mValues["request_time_duration_ms"] = duration
-
-	err = metrics.LogPoint(mPoint, mValues)
-
-	if err != nil {
-		log.WithError(err).Error("failed to log metrics")
+	mValues[domain.LogFieldSQLQuery.MetricKey()] = sql
+	if affectedRows > 0 {
+		mValues[domain.LogFieldSQLRowsAffected.MetricKey()] = affectedRows
 	}
+	mValues[domain.LogFieldDuration.MetricKey()] = duration
+
+	metrics.LogPoint(mPoint, mValues)
 }
 
 func newGormLogger() *gormLogger {
