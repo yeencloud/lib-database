@@ -5,13 +5,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	metrics "github.com/yeencloud/lib-metrics"
 	"gorm.io/gorm/logger"
 
 	"github.com/yeencloud/lib-database/domain"
-	metrics "github.com/yeencloud/lib-metrics"
-	MetricsDomain "github.com/yeencloud/lib-metrics/domain"
 	sharedLogger "github.com/yeencloud/lib-shared/log"
-	sharedMetrics "github.com/yeencloud/lib-shared/metrics"
 )
 
 type gormLogger struct {
@@ -19,6 +17,12 @@ type gormLogger struct {
 
 func (g gormLogger) LogMode(level logger.LogLevel) logger.Interface {
 	return g
+}
+
+type SQLEntryMetric struct {
+	Query        string `metric:"query"`
+	AffectedRows int64  `metric:"affected_rows"`
+	Duration     int64  `metric:"duration"`
 }
 
 func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, affectedRows int64), err error) {
@@ -50,35 +54,18 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 		logger = logger.WithError(err)
 	}
 
-	logger.Info(sql)
+	logger.Debug(sql)
 
-	var mPoint MetricsDomain.Point
-	var mValues MetricsDomain.Values
-
-	point, ok := ctx.Value(sharedMetrics.MetricsPointKey).(MetricsDomain.Point)
-	if !ok {
-		mPoint = MetricsDomain.Point{
-			Tags: map[string]string{},
-		}
-	} else {
-		mPoint = point
+	metric := SQLEntryMetric{
+		Query:    sql,
+		Duration: duration,
 	}
 
-	mPoint.Name = domain.SQLMetricPointName
-
-	values, ok := ctx.Value(sharedMetrics.MetricsValuesKey).(MetricsDomain.Values)
-	if !ok {
-		mValues = MetricsDomain.Values{}
-	} else {
-		mValues = values
-	}
-	mValues[domain.LogFieldSQLQuery.MetricKey()] = sql
 	if affectedRows > 0 {
-		mValues[domain.LogFieldSQLRowsAffected.MetricKey()] = affectedRows
+		metric.AffectedRows = affectedRows
 	}
-	mValues[domain.LogFieldDuration.MetricKey()] = duration
 
-	metrics.LogPoint(mPoint, mValues)
+	_ = metrics.WritePoint(ctx, domain.SQLMetricPointName, metric)
 }
 
 func newGormLogger() *gormLogger {

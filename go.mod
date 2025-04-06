@@ -6,8 +6,8 @@ toolchain go1.23.4
 
 require (
 	github.com/sirupsen/logrus v1.9.3
-	github.com/yeencloud/lib-metrics v0.2.3
-	github.com/yeencloud/lib-shared v0.2.2
+	github.com/yeencloud/lib-metrics v0.2.4
+	github.com/yeencloud/lib-shared v0.2.3
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
@@ -26,8 +26,8 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/oapi-codegen/runtime v1.1.1 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 )

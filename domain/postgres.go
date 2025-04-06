@@ -5,10 +5,10 @@ import (
 )
 
 type PostgresConfig struct {
-	Address string `config:"DB_ADDRESS" default:"localhost"`
-	Port    int    `config:"DB_PORT" default:"5432"`
+	Address string `config:"PG_ADDRESS" default:"localhost"`
+	Port    int    `config:"PG_PORT" default:"5432"`
 
-	Username string        `config:"DB_USERNAME" default:"postgres"`
-	Password config.Secret `config:"DB_PASSWORD" default:"postgres"`
-	Database string        `config:"DB_DATABASE" default:"postgres"`
+	Username string        `config:"PG_USERNAME" default:"postgres"`
+	Password config.Secret `config:"PG_PASSWORD" default:"postgres"`
+	Database string        `config:"PG_DATABASE" default:"postgres"`
 }
