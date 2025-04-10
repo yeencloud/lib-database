@@ -7,7 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/yeencloud/lib-metrics v0.2.4
-	github.com/yeencloud/lib-shared v0.2.3
+	github.com/yeencloud/lib-shared v0.2.5
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
