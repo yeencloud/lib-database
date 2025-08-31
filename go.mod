@@ -1,13 +1,11 @@
 module github.com/yeencloud/lib-database
 
-go 1.23.0
-
-toolchain go1.23.4
+go 1.25
 
 require (
 	github.com/sirupsen/logrus v1.9.3
-	github.com/yeencloud/lib-metrics v0.2.5
-	github.com/yeencloud/lib-shared v0.2.9
+	github.com/yeencloud/lib-metrics v0.2.7
+	github.com/yeencloud/lib-shared v0.2.11
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )

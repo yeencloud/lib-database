@@ -6,16 +6,16 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	metrics "github.com/yeencloud/lib-metrics"
-	"gorm.io/gorm/logger"
+	gormLogger "gorm.io/gorm/logger"
 
 	"github.com/yeencloud/lib-database/domain"
 	sharedLogger "github.com/yeencloud/lib-shared/log"
 )
 
-type gormLogger struct {
+type dbLogger struct {
 }
 
-func (g gormLogger) LogMode(level logger.LogLevel) logger.Interface {
+func (g dbLogger) LogMode(level gormLogger.LogLevel) gormLogger.Interface {
 	return g
 }
 
@@ -25,7 +25,7 @@ type SQLEntryMetric struct {
 	Duration     int64  `metric:"duration"`
 }
 
-func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, affectedRows int64), err error) {
+func (g dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, affectedRows int64), err error) {
 	sql, affectedRows := fc()
 	end := time.Now()
 	duration := time.Duration(end.UnixMilli() - begin.UnixMilli()).Milliseconds()
@@ -68,11 +68,11 @@ func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql s
 	_ = metrics.WritePoint(ctx, domain.SQLMetricPointName, metric)
 }
 
-func newGormLogger() *gormLogger {
-	return &gormLogger{}
+func newGormLogger() *dbLogger {
+	return &dbLogger{}
 }
 
 // Those fields are required for the implementation of the correct interface. However, they are not used in the current implementation.
-func (g gormLogger) Info(context.Context, string, ...interface{})  {}
-func (g gormLogger) Warn(context.Context, string, ...interface{})  {}
-func (g gormLogger) Error(context.Context, string, ...interface{}) {}
+func (g dbLogger) Info(context.Context, string, ...interface{})  {}
+func (g dbLogger) Warn(context.Context, string, ...interface{})  {}
+func (g dbLogger) Error(context.Context, string, ...interface{}) {}

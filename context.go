@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
 	"github.com/yeencloud/lib-database/domain"
@@ -22,8 +21,4 @@ func GetDatabaseFromContext(ctx context.Context) (*gorm.DB, error) {
 	}
 
 	return db, nil
-}
-
-func WithLogger(ctx context.Context, logger *log.Entry) context.Context {
-	return context.WithValue(ctx, domain.DatabaseCtxKey, logger)
 }
