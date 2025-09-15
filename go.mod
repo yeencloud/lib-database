@@ -7,7 +7,7 @@ require (
 	github.com/yeencloud/lib-metrics v0.2.7
 	github.com/yeencloud/lib-shared v0.2.11
 	gorm.io/driver/postgres v1.5.11
-	gorm.io/gorm v1.25.12
+	gorm.io/gorm v1.30.0
 )
 
 require (
