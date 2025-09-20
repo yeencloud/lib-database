@@ -11,4 +11,6 @@ type PostgresConfig struct {
 	Username string        `config:"PG_USERNAME" default:"postgres"`
 	Password config.Secret `config:"PG_PASSWORD" default:"postgres"`
 	Database string        `config:"PG_DATABASE" default:"postgres"`
+
+	UseTLS bool `config:"PG_TLS" default:"true"`
 }

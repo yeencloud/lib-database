@@ -10,7 +10,11 @@ import (
 )
 
 func NewPostgresDatabase(config *domain.PostgresConfig) (*Database, error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable", config.Address, config.Username, config.Password.Value, config.Database, config.Port)
+	sslmode := "disable"
+	if config.UseTLS {
+		sslmode = "require"
+	}
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s", config.Address, config.Username, config.Password.Value, config.Database, config.Port, sslmode)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: newGormLogger(),
 	})
