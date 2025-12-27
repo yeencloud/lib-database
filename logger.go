@@ -5,7 +5,6 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	metrics "github.com/yeencloud/lib-metrics"
 	gormLogger "gorm.io/gorm/logger"
 
 	"github.com/yeencloud/lib-database/domain"
@@ -55,17 +54,6 @@ func (g dbLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql str
 	}
 
 	logger.Debug(sql)
-
-	metric := SQLEntryMetric{
-		Query:    sql,
-		Duration: duration,
-	}
-
-	if affectedRows > 0 {
-		metric.AffectedRows = affectedRows
-	}
-
-	_ = metrics.WritePoint(ctx, domain.SQLMetricPointName, metric)
 }
 
 func newGormLogger() *dbLogger {

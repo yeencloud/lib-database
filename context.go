@@ -6,18 +6,18 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/yeencloud/lib-database/domain"
-	"github.com/yeencloud/lib-shared/errors"
+	"github.com/yeencloud/lib-shared/apperr"
 )
 
 func GetDatabaseFromContext(ctx context.Context) (*gorm.DB, error) {
 	dbFromContext := ctx.Value(domain.DatabaseCtxKey)
 	if dbFromContext == nil {
-		return nil, &errors.ObjectNotInContextError{Object: domain.DatabaseCtxKey}
+		return nil, &apperr.ObjectNotInContextError{Object: domain.DatabaseCtxKey}
 	}
 
 	db, ok := dbFromContext.(*gorm.DB)
 	if !ok {
-		return nil, &errors.WrongObjectTypeInContextError{Object: domain.DatabaseCtxKey, ExpectedType: "*gorm.DB"}
+		return nil, &apperr.WrongObjectTypeInContextError{Object: domain.DatabaseCtxKey, ExpectedType: "*gorm.DB"}
 	}
 
 	return db, nil
